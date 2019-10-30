@@ -1,12 +1,35 @@
+/* Alunos: Samuel Dumaresq; Thiago Andrew
+   ITP
+   Professor: Júlio César
+*/
+
+
+/* referencias: https://www.inf.pucrs.br/~pinho/PRGBAIXONIVEL/Trabalhos/T1-2016-2/T1-2016-2.html
+http://linguagemc.com.br/constantes-em-c-usando-define/
+https://www.ime.usp.br/~pf/algoritmos/aulas/io.html
+https://pt.wikibooks.org/wiki/Programar_em_C/Entrada_e_sa%C3%ADda_em_arquivos
+https://www.youtube.com/watch?v=BNIW_dcB3uY&t=212s
+https://www.youtube.com/results?search_query=Gera%C3%A7%C3%A3o+de+imagens+PPM
+https://www.youtube.com/watch?v=O5lqpxZQP-Y&t=137s
+*/
+
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <conio.h>
+
+//declaração de constantes para o programa no final do tempo de execução
+#define ERRO 0
+#define OK 1
+//underflow será causado quando o número nos pixeis for menor que 0, já ques estamos usando números do tipo com unsigned.
+#define UNDERFLOW 2
 
 //struct dos pixels.
 struct cor{
 	unsigned char red, green, blue;
 	int color;
 };
+
+enum cores_pixeis { red, green, blue }colors;
 
 //struct posição da matriz.
 struct posMatriz {
@@ -19,55 +42,6 @@ struct Dados {
 	int quant;
 	struct posMatriz *top;
 };
-
-void verificar(struct cor **img, int i, int j, int lin, int col; struct Dados *dado){
-	int result;
-	//verificando cada pixel diferente do fundo.
-	unsigned fred=img[0][0].red;
-	unsigned fgreen=img[0][0].green;
-	unsigned fblue=img[0][0].blue;
-	      if(j>0){
-	      	//verificando os pixeis diferentes do fundo, diferente de 1, se for diferente vamos marcar com 1.
-	      	if(((img[i][j-1].red!=fred) || (img[i][j-1].green!=fgreen) || (img[i][j-1].blue!=fblue)) && (img[i][j-1].color!=1)){
-			  
-	      	
-	      	img[i][j-1].color=1;
-	      	//jogando os pixeis maracados com 1 em dados.
-	      	jogarfundo(i, j-1, dado, &result);
-	      	
-		  }
-	}
-	     if(i>0){
-	     	if(((img[i-1][j].red!=fred) || (img[i-1][j].green!=fgreen) || (img[i-1][j].blue!=fblue)) && (img[i-1][j]color!=1)){
-		    
-		    img[i-1][j].color=1;
-	      
-	      	jogarfundo(i-1, j, dado, &result);
-		 
-		 }
-	}
-	
-	if(j<col-1){
-		//verificando o contorno da matriz para não passar da matriz de pixeis, para não passar a borda.
-		if(((img[i][j+1].red!=fred) || (img[i][j+1].green!=fgreen) || (img[i][j+1].blue!=fblue)) && (img[i][j+1]color!=1)){
-		    
-		    img[i][j+1].color=1;
-	      
-	      	jogarfundo(i, j+1, dado, &result);
-		 
-		 }
-	}
-	
-	if(i<lin-1){
-		if(((img[i+1][j].red!=fred) || (img[i+1][j].green!=fgreen) || (img[i+1][j].blue!=fblue)) && (img[i+1][j]color!=1)){
-		    
-		    img[i+1][j].color=1;
-	      
-	      	jogarfundo(i+1, j, dado, &result);
-		 
-		 }
-	}
-}
 
 struct Dados *criadata (int *result){
 	struct Dados *dado;
@@ -92,16 +66,76 @@ void jogarfundo(int x, int y, struct Dados *dado, int *result){
 			dado->top = posMat;
 		} else {
 			posMat->Mat = dado->top;
-			dado->top = p;
+			dado->top = posMat;
 		}
 		dado->quant++;
 		*result = OK;
 	}
 }
 
-void devolver(){
-
+void devolver(struct Dados *dado, struct posMatriz *posMat, int *result){
+    struct posMatriz *auxiliar;
+    if(dado->top == NULL){
+    	*result = UNDERFLOW;
+	} else {
+		auxiliar = dado->top;
+		posMat->x = auxiliar->x;
+		posMat->y = auxiliar->y;
+		
+		dado->top = auxiliar->Mat;
+		dado->quant--;
+		free(auxiliar);
+	}
 }
+
+void verificar(struct cor **img, int i, int j, int lin, int col, struct Dados *dado){
+	int result;
+	//verificando cada pixel diferente do fundo.
+	unsigned fred=img[0][0].red;
+	unsigned fgreen=img[0][0].green;
+	unsigned fblue=img[0][0].blue;
+	      if(j>0){
+	      	//verificando os pixeis diferentes do fundo, diferente de 1, se for diferente vamos marcar com 1.
+	      	if(((img[i][j-1].red!=fred) || (img[i][j-1].green!=fgreen) || (img[i][j-1].blue!=fblue)) && (img[i][j-1].color!=1)){
+			  
+	      	
+	      	img[i][j-1].color=1;
+	      	//jogando os pixeis maracados com 1 em dados.
+	      	jogarfundo(i, j-1, dado, &result);
+	      	
+		  }
+	}
+	     if(i>0){
+	     	if(((img[i-1][j].red!=fred) || (img[i-1][j].green!=fgreen) || (img[i-1][j].blue!=fblue)) && (img[i-1][j].color!=1)){
+		    
+		    img[i-1][j].color=1;
+	      
+	      	jogarfundo(i-1, j, dado, &result);
+		 
+		 }
+	}
+	
+	if(j<col-1){
+		//verificando o contorno da matriz para não passar da matriz de pixeis, para não passar a borda.
+		if(((img[i][j+1].red!=fred) || (img[i][j+1].green!=fgreen) || (img[i][j+1].blue!=fblue)) && (img[i][j+1].color!=1)){
+		    
+		    img[i][j+1].color=1;
+	      
+	      	jogarfundo(i, j+1, dado, &result);
+		 
+		 }
+	}
+	
+	if(i<lin-1){
+		if(((img[i+1][j].red!=fred) || (img[i+1][j].green!=fgreen) || (img[i+1][j].blue!=fblue)) && (img[i+1][j].color!=1)){
+		    
+		    img[i+1][j].color=1;
+	      
+	      	jogarfundo(i+1, j, dado, &result);
+		 
+		 }
+	}
+} 
 
 //função cria dados para o armazenamento.
 struct Dados *criadata (int *result);
@@ -117,7 +151,7 @@ int main(){
 	//criando a leitura do arquivo e chamando as variaveis para cada struct.
 	FILE *arquivo;
 	char farq[30];
-	char chave[5], c;
+	char chave[3], c;
 	int i, j, col, lin, max255;
 	struct cor **img;
 	unsigned char red, green, blue, fred, fblue, fgreen;
@@ -130,7 +164,7 @@ int main(){
 	int resulta;
 	
 	//chamando um repositório.
-	dado = newDado(&resulta);
+	dado = criadata(&resulta);
 	
 	//verificando o arquivo.
 	printf("DIGITE O NOME DO ARQUIVO NO FORMATO PPM: ");
@@ -144,7 +178,7 @@ int main(){
 	}
 
 //verificando se o arquivo é PPM.
-fscanf(arq, "%s", chave);
+fscanf(arquivo,"%s", chave);
 if (strcmp(chave,"P6") !=0){
 	printf("Arquivo não é PPM\n");
 	fclose(arquivo);
@@ -168,10 +202,10 @@ for (j=0; j<linha;j++){
 //preenchendo a matriz com os dados dos pixeis RGB.
 for(i=0;i<lin;i++){
 	for(j=0;j<col;j++){
-		fscanf(arquivo, "%c%c%c", &img[i][j].red, &img[i][j].g, &img[i][j].blue);
+		fscanf(arquivo, "%c%c%c", &img[i][j].red, &img[i][j].green, &img[i][j].blue);
 	}
 }
-fclose(arq);
+fclose(arquivo);
 
 //locais do fundo da matriz na imagem com o RGB.
 fred = img[0][0].red;
@@ -188,12 +222,12 @@ for(i=0;i<lin;i++){
 		
 		img[i][j].color = 1;
 		
-		//passa a matriz e oarmazenamento das informações em dado na struct dados.
+		//passa a matriz e o armazenamento das informações em dado na struct dados.
 		verificar(img, i, j, lin, col, dado);
 		
 	}
 		while(dado->quant>0){
-			//se haver elementos no armazenamento em dado, devolvendo o resultado da posição na matri
+			//se houver elementos no armazenamento em dado, devolvendo o resultado da posição na matriz.
 			devolver (dado, &posMat, &resulta);
 			//verifica o vetor nas posições x e y no último elemento incluso em dado.
 			verificar(img, posMat.x, posMat.y, lin, col, dado);
@@ -207,4 +241,4 @@ printf("Quantidade de imagens = %d", cont);
 
 return 0;
 
-} 
+}
