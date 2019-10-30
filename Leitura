@@ -1,0 +1,210 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <conio.h>
+
+//struct dos pixels.
+struct cor{
+	unsigned char red, green, blue;
+	int color;
+};
+
+//struct posição da matriz.
+struct posMatriz {
+	unsigned int x;
+	unsigned int y;
+	struct posMatriz *Mat;
+};
+//struct de armazenamento das informações para a imagem.
+struct Dados {
+	int quant;
+	struct posMatriz *top;
+};
+
+void verificar(struct cor **img, int i, int j, int lin, int col; struct Dados *dado){
+	int result;
+	//verificando cada pixel diferente do fundo.
+	unsigned fred=img[0][0].red;
+	unsigned fgreen=img[0][0].green;
+	unsigned fblue=img[0][0].blue;
+	      if(j>0){
+	      	//verificando os pixeis diferentes do fundo, diferente de 1, se for diferente vamos marcar com 1.
+	      	if(((img[i][j-1].red!=fred) || (img[i][j-1].green!=fgreen) || (img[i][j-1].blue!=fblue)) && (img[i][j-1].color!=1)){
+			  
+	      	
+	      	img[i][j-1].color=1;
+	      	//jogando os pixeis maracados com 1 em dados.
+	      	jogarfundo(i, j-1, dado, &result);
+	      	
+		  }
+	}
+	     if(i>0){
+	     	if(((img[i-1][j].red!=fred) || (img[i-1][j].green!=fgreen) || (img[i-1][j].blue!=fblue)) && (img[i-1][j]color!=1)){
+		    
+		    img[i-1][j].color=1;
+	      
+	      	jogarfundo(i-1, j, dado, &result);
+		 
+		 }
+	}
+	
+	if(j<col-1){
+		//verificando o contorno da matriz para não passar da matriz de pixeis, para não passar a borda.
+		if(((img[i][j+1].red!=fred) || (img[i][j+1].green!=fgreen) || (img[i][j+1].blue!=fblue)) && (img[i][j+1]color!=1)){
+		    
+		    img[i][j+1].color=1;
+	      
+	      	jogarfundo(i, j+1, dado, &result);
+		 
+		 }
+	}
+	
+	if(i<lin-1){
+		if(((img[i+1][j].red!=fred) || (img[i+1][j].green!=fgreen) || (img[i+1][j].blue!=fblue)) && (img[i+1][j]color!=1)){
+		    
+		    img[i+1][j].color=1;
+	      
+	      	jogarfundo(i+1, j, dado, &result);
+		 
+		 }
+	}
+}
+
+struct Dados *criadata (int *result){
+	struct Dados *dado;
+	dado = (struct Dados *) malloc (sizeof(struct Dados));
+	if(dado == NULL) *result = ERRO;
+	else{
+		dado->top = NULL;
+		dado->quant = 0;
+		*result = OK;
+	}
+	return dado;
+}
+
+void jogarfundo(int x, int y, struct Dados *dado, int *result){
+	struct posMatriz *posMat = (struct posMatriz *)malloc(sizeof(struct posMatriz));
+	if(posMat == NULL) *result = ERRO;
+	else{
+		posMat->x;
+		posMat->y;
+		if(dado->top == NULL){
+			posMat->Mat = NULL;
+			dado->top = posMat;
+		} else {
+			posMat->Mat = dado->top;
+			dado->top = p;
+		}
+		dado->quant++;
+		*result = OK;
+	}
+}
+
+void devolver(){
+
+}
+
+//função cria dados para o armazenamento.
+struct Dados *criadata (int *result);
+
+//funcoes para o armazenamento da matriz.
+void jogarfundo(int x, int y, struct Dados *dado, int *result);
+void devolver(struct Dados *dado, struct posMatriz *posMat, int *result);
+
+//analisa a matriz e seus elementos.
+void verificar(struct cor **img, int i, int j, int lin, int col, struct Dados *dado);
+
+int main(){
+	//criando a leitura do arquivo e chamando as variaveis para cada struct.
+	FILE *arquivo;
+	char farq[30];
+	char chave[5], c;
+	int i, j, col, lin, max255;
+	struct cor **img;
+	unsigned char red, green, blue, fred, fblue, fgreen;
+	int linha, coluna;
+	long int pos;
+	int cont = 0;
+	
+	struct Dados *dado;
+	struct posMatriz posMat;
+	int resulta;
+	
+	//chamando um repositório.
+	dado = newDado(&resulta);
+	
+	//verificando o arquivo.
+	printf("DIGITE O NOME DO ARQUIVO NO FORMATO PPM: ");
+	scanf("%s", farq);
+	
+	//abrindo o arquivo.
+	arquivo=fopen(farq, "rb");
+	if(arquivo==NULL){
+		printf("Erro para abrir o arquivo %s\n", farq);
+		return 0;
+	}
+
+//verificando se o arquivo é PPM.
+fscanf(arq, "%s", chave);
+if (strcmp(chave,"P6") !=0){
+	printf("Arquivo não é PPM\n");
+	fclose(arquivo);
+	return 0;
+}
+
+//olhando o número de linhas e colunas, junto com o número dos pixeis.
+fscanf(arquivo,"%d %d %d", &col, &lin, &max255);
+fscanf(arquivo, "%c", &c);
+
+linha = lin;
+coluna = col;
+
+//alocação dinâmica da matriz para alocar a matriz zerada na memória.
+img=(struct cor**) calloc(linha,sizeof(struct cor*));
+
+for (j=0; j<linha;j++){
+	img[j]=calloc(coluna,sizeof(struct cor));
+}
+
+//preenchendo a matriz com os dados dos pixeis RGB.
+for(i=0;i<lin;i++){
+	for(j=0;j<col;j++){
+		fscanf(arquivo, "%c%c%c", &img[i][j].red, &img[i][j].g, &img[i][j].blue);
+	}
+}
+fclose(arq);
+
+//locais do fundo da matriz na imagem com o RGB.
+fred = img[0][0].red;
+fgreen = img[0][0].green;
+fblue = img[0][0].blue;
+
+
+//analisa a matriz.
+for(i=0;i<lin;i++){
+	for(j=0;j<col;j++){
+		//comparação dos pixeis diferentes do fundo e assim ele marca com 1 caso ja tenha passado pelo fundo.
+		if(((img[i][j].red!=fred) || (img[i][j].green!=fgreen) || (img[i][j].blue!=fblue)) &&(img[i][j].color!=1)){
+		
+		
+		img[i][j].color = 1;
+		
+		//passa a matriz e oarmazenamento das informações em dado na struct dados.
+		verificar(img, i, j, lin, col, dado);
+		
+	}
+		while(dado->quant>0){
+			//se haver elementos no armazenamento em dado, devolvendo o resultado da posição na matri
+			devolver (dado, &posMat, &resulta);
+			//verifica o vetor nas posições x e y no último elemento incluso em dado.
+			verificar(img, posMat.x, posMat.y, lin, col, dado);
+		}
+		//quando sair da parte do while na função de devolver, a contagem será iniciada para dizer o número de imagens.
+		cont++;
+	}
+}
+
+printf("Quantidade de imagens = %d", cont);
+
+return 0;
+
+} 
