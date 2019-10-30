@@ -29,7 +29,7 @@ struct cor{
 	int color;
 };
 
-enum cores_pixeis { red, green, blue }colors;
+typedef enum cores_pixeis { red, green, blue }colors;
 
 //struct posição da matriz.
 struct posMatriz {
