@@ -4,10 +4,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+void image(int dimex, int dimey){
+     
+}
+
 //criando um arquivo (imagem) no formato ppm 
 int main()
 {
-  const int dimx = 800, dimy = 800;
+  printf("image: ");
+  int dimx, dimy;
+  scanf("image: %d %d", &dimx, &dimy);
+  //printf("image: %d %d", dimx, dimy);
   int i, j;
   FILE *img = fopen("image.ppm", "wb"); /* b - binary mode */
   fprintf(img, "P6\n%d %d\n255\n", dimx, dimy);
