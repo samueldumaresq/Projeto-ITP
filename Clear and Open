@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+/*Função para abrir a imagem*/
+int func_open(char y[6])
+{
+	char x[6] = "open";
+	if (strcmp (y, x) == 0)
+	{	
+		FILE *img = fopen(arq, "wb"); 
+	}
+	else
+	{
+		printf("Digite 'open', por favor. \n");
+	}
+	return 0; 
+}
+
+/*Função para limpar a tela com uma cor especificada*/
+int func_clear()
+{
+
+for (j = 0; j < dimy; j++)
+  {
+    for (i = 0; i < dimx; i++)
+    {
+      static unsigned char color[3];
+      color[0] = i % 255;  //red
+      color[1] = j % 255;  //green 
+      color[2] = (i * j) % 255;  //blue 
+      fwrite(color, 1, 3, img);
+    }
+  }
+
+	return 0;
+}
+
+
+int main()
+{
+	char y[6];
+	printf("Digite 'open' para abrir a imagem: \n");
+	scanf("%s", y);
+	printf("%d ", func_open(y));
+
+
+	
+	return 0;
+}
